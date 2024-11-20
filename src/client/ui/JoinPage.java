@@ -20,25 +20,20 @@ public class JoinPage extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Panel for form inputs
         JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
 
-        // Username input
         panel.add(new JLabel("Username:"));
         usernameField = new JTextField();
         panel.add(usernameField);
 
-        // IP input
         panel.add(new JLabel("Server IP:"));
         ipField = new JTextField(ChatClient.DEFAULT_IP);
         panel.add(ipField);
 
-        // Port input
         panel.add(new JLabel("Port:"));
         portField = new JTextField(ChatClient.DEFAULT_PORT + "");
         panel.add(portField);
 
-        // Join button
         joinButton = new JButton("Join");
         joinButton.addActionListener(new JoinButtonListener());
         panel.add(joinButton);

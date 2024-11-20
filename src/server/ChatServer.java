@@ -64,4 +64,8 @@ public class ChatServer {
     synchronized static boolean isClientTurn(int clientID) {
         return (getTurn() == clientID);
     }
+
+    synchronized static PlayerList getPlayers() {
+        return profileList;
+    }
 }

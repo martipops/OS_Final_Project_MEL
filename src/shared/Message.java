@@ -23,6 +23,10 @@ public class Message implements Serializable {
         return type;
     }
 
+    public PlayerList getPlayers() {
+        return players;
+    }
+
     public Message(String text) {
         this.type = MessageType.TEXT;
         this.text = text;

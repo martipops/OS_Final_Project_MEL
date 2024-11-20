@@ -56,8 +56,15 @@ public class ChatClient {
 
     synchronized static void receiveMessages(Message message) {
         System.out.println("Message received:" + message);
-        if (message.getType() == MessageType.CANVAS) {
-            app.setCanvas(message.getCanvas());
+        switch (message.getType()) {
+            case MessageType.CANVAS:
+                app.setCanvas(message.getCanvas());
+                break;
+            case MessageType.PLAYERLIST:
+                app.updatePlayerList(message.getPlayers());
+                break;
+            default:
+                break;
         }
     }
 

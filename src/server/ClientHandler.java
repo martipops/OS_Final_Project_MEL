@@ -20,11 +20,18 @@ class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        sendPlayerList();
     }
 
     public int getId() {
         return playerInfo.getId();
+    }
+
+    public void sendPlayerList() {
+        synchronized (ChatServer.class) {
+            Message listMessage = new Message(ChatServer.getPlayers());
+            sendMessage(listMessage);
+        }
     }
 
     public void sendMessage(Message message) {

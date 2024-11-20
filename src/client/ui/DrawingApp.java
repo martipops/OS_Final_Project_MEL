@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 
 import client.ChatClient;
 import shared.CanvasInfo;
+import shared.PlayerList;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,8 +16,10 @@ public class DrawingApp extends JFrame {
     private DrawPanel drawPanel;
     private Color drawColor = Color.BLACK;
     private CanvasInfo canvas;
+    private SidePanel sidebar;
     private int canvasWidth = 600;
     private int canvasHeight = 400;
+
 
     public DrawingApp() {
         canvas = new CanvasInfo();
@@ -36,8 +39,7 @@ public class DrawingApp extends JFrame {
         controls.add(newLayerButton);
         controls.add(undoButton);
 
-        String[] sidebarLabels = { "Label 1", "Label 2", "Label 3", "Label 4" };
-        SidePanel sidebar = new SidePanel(sidebarLabels);
+        sidebar = new SidePanel();
 
         add(sidebar, BorderLayout.WEST);
         add(controls, BorderLayout.NORTH);
@@ -55,6 +57,10 @@ public class DrawingApp extends JFrame {
         drawPanel.repaint();
     }
 
+    public void updatePlayerList(PlayerList players) {
+        sidebar.updatePlayerList(players);
+    }
+
     public CanvasInfo getCanvas() {
         return canvas;
     }
@@ -66,6 +72,8 @@ public class DrawingApp extends JFrame {
         public DrawPanel() {
             setBackground(Color.WHITE);
             setPreferredSize(new Dimension(400, 400));
+            
+            // Goofy drawpanel border
             setBorder(new CompoundBorder(
                     new EmptyBorder(CANVAS_PADDING, CANVAS_PADDING, CANVAS_PADDING, CANVAS_PADDING),
                     BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED)));
