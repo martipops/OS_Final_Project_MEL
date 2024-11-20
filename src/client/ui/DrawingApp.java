@@ -6,7 +6,6 @@ import javax.swing.border.EmptyBorder;
 
 import client.ChatClient;
 import shared.CanvasInfo;
-import shared.PlayerList;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -16,7 +15,6 @@ public class DrawingApp extends JFrame {
     private DrawPanel drawPanel;
     private Color drawColor = Color.BLACK;
     private CanvasInfo canvas;
-    private SidePanel sidebar;
     private int canvasWidth = 600;
     private int canvasHeight = 400;
 
@@ -39,9 +37,6 @@ public class DrawingApp extends JFrame {
         controls.add(newLayerButton);
         controls.add(undoButton);
 
-        sidebar = new SidePanel();
-
-        add(sidebar, BorderLayout.WEST);
         add(controls, BorderLayout.NORTH);
         add(drawPanel, BorderLayout.CENTER);
 
@@ -55,10 +50,6 @@ public class DrawingApp extends JFrame {
         this.canvas = canvas;
         this.canvas.createNewLayer();
         drawPanel.repaint();
-    }
-
-    public void updatePlayerList(PlayerList players) {
-        sidebar.updatePlayerList(players);
     }
 
     public CanvasInfo getCanvas() {

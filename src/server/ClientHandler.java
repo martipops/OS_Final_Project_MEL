@@ -3,16 +3,16 @@ import java.io.*;
 import java.net.*;
 
 import shared.Message;
-import shared.PlayerProfile;
+import shared.MessageType;
 
 class ClientHandler implements Runnable {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-    private PlayerProfile playerInfo;
+    private int id;
 
     public ClientHandler(int id, Socket socket) {
-        playerInfo = new PlayerProfile(id);
+        this.id = id;
         this.socket = socket;
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -20,18 +20,10 @@ class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        sendPlayerList();
     }
 
     public int getId() {
-        return playerInfo.getId();
-    }
-
-    public void sendPlayerList() {
-        synchronized (ChatServer.class) {
-            Message listMessage = new Message(ChatServer.getPlayers());
-            sendMessage(listMessage);
-        }
+        return this.id;
     }
 
     public void sendMessage(Message message) {
@@ -48,7 +40,7 @@ class ClientHandler implements Runnable {
                 ChatServer.broadcastMessage(message);
                 ChatServer.nextTurn();
             } else {
-                sendMessage(new Message("Wait your turn"));;
+                sendMessage(new Message(MessageType.NOTYOURTURN));;
             }
         }
     }

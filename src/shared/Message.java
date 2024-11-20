@@ -8,8 +8,6 @@ public class Message implements Serializable {
     private String text;
     private CanvasInfo canvas;
     private MessageType type;
-    private PlayerList players;
-    private PlayerProfile playerInfo;
 
     public String getText() {
         return text;
@@ -23,10 +21,6 @@ public class Message implements Serializable {
         return type;
     }
 
-    public PlayerList getPlayers() {
-        return players;
-    }
-
     public Message(String text) {
         this.type = MessageType.TEXT;
         this.text = text;
@@ -38,16 +32,9 @@ public class Message implements Serializable {
         this.canvas = canvas;
     }
 
-    public Message(PlayerList players) {
-        this.type = MessageType.PLAYERLIST;
+    public Message(MessageType t) {
+        this.type = t;
         this.text = "Placeholder";
-        this.players = players;
-    }
-
-    public Message(PlayerProfile playerInfo) {
-        this.type = MessageType.PLAYERPROFILE;
-        this.text = "Placeholder";
-        this.playerInfo = playerInfo;
     }
 
     @Override
@@ -57,10 +44,8 @@ public class Message implements Serializable {
                 return canvas.toString();
             case TEXT:
                 return text;
-            case PLAYERLIST:
-                return players.toString();
-            case PLAYERPROFILE:
-                return playerInfo.toString();
+            default:
+                break;
         }        
         return text;
     }

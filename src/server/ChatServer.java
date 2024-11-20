@@ -5,13 +5,11 @@ import java.util.*;
 
 import shared.Message;
 import shared.MessageType;
-import shared.PlayerList;
 
 public class ChatServer {
     private static final int PORT = 12345;
     private static HashMap<Integer, ClientHandler> clients = new HashMap<>();
     private static ArrayList<Integer> playerOrder = new ArrayList<>();
-    private static PlayerList profileList = new PlayerList();
     private static int nextid = 0;
     private static int turnCounter = 0;
 
@@ -23,7 +21,6 @@ public class ChatServer {
                 ClientHandler clientHandler = new ClientHandler(nextid, socket);
                 clients.put(nextid, clientHandler);
                 playerOrder.add(nextid); 
-                profileList.playerConnected(nextid);
                 new Thread(clientHandler).start();
                 nextid++;
             }
@@ -34,21 +31,23 @@ public class ChatServer {
 
     synchronized static void broadcastMessage(Message message) {
         System.out.println("Broadcasting:" + message);
-        if (message.getType() != MessageType.PLAYERPROFILE) {
-            for (ClientHandler client : clients.values()) {
-                client.sendMessage(message);
-            }
+        switch (message.getType()) {
+            case MessageType.NOTYOURTURN:
+                break;
+            default:
+                for (ClientHandler client : clients.values()) {
+                    client.sendMessage(message);
+                }
+                break;
         }
     }
 
     synchronized static void kickPlayer(int clientId) {
+        clients.remove(clientId);
+        playerOrder.remove(Integer.valueOf(clientId));
         if (isClientTurn(clientId)) {
             nextTurn();
         }
-        clients.remove(clientId);
-        playerOrder.remove(Integer.valueOf(clientId));
-        profileList.removePlayer(clientId);
-        broadcastMessage(new Message(profileList));
     }
 
     synchronized static void nextTurn() {
@@ -65,7 +64,4 @@ public class ChatServer {
         return (getTurn() == clientID);
     }
 
-    synchronized static PlayerList getPlayers() {
-        return profileList;
-    }
 }

@@ -60,8 +60,8 @@ public class ChatClient {
             case MessageType.CANVAS:
                 app.setCanvas(message.getCanvas());
                 break;
-            case MessageType.PLAYERLIST:
-                app.updatePlayerList(message.getPlayers());
+            case MessageType.NOTYOURTURN:
+                JOptionPane.showMessageDialog(loginPage, "Wait your turn!", "Error", JOptionPane.ERROR_MESSAGE);
                 break;
             default:
                 break;
