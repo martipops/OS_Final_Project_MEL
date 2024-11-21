@@ -16,17 +16,33 @@ class ServerHandler implements Runnable {
             in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
+            closeResources();
         }
-
     }
 
     public void sendMessage(Message message) {
         try {
-            System.out.println("Sending" + message);
+            System.out.println("Sending " + message);
             out.writeObject(message);
         } catch (IOException e) {
             e.printStackTrace();
-        };
+        }
+    }
+
+    private void closeResources() {
+        try {
+            if (out != null) {
+                out.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void parseMessage(Message message) {
@@ -45,13 +61,9 @@ class ServerHandler implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
-            try {
-                System.out.println("Closing");
-                ChatClient.forciblyDisconnect("Disconnected from server");
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Closing");
+            ChatClient.forciblyDisconnect("Disconnected from server");
+            closeResources();
         }
     }
 }

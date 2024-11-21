@@ -35,7 +35,7 @@ public class ChatClient {
     }
 
 
-    public synchronized static boolean connectToServer(String username, String ip, int port) {
+    public synchronized static boolean connectToServer(String ip, int port) {
         try {
             socket = new Socket(ip, port);
             server = new ServerHandler(socket);

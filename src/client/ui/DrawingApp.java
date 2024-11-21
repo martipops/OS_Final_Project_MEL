@@ -43,7 +43,7 @@ public class DrawingApp extends JFrame {
         setResizable(false);
         setSize(canvasWidth, canvasHeight + 50);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+        setVisible(false);
     }
 
     public void setCanvas(CanvasInfo canvas) {

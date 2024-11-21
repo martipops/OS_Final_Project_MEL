@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 
 public class JoinPage extends JFrame {
 
-    private JTextField usernameField;
     private JTextField ipField;
     private JTextField portField;
     private JButton joinButton;
@@ -21,10 +20,6 @@ public class JoinPage extends JFrame {
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
-
-        panel.add(new JLabel("Username:"));
-        usernameField = new JTextField();
-        panel.add(usernameField);
 
         panel.add(new JLabel("Server IP:"));
         ipField = new JTextField(ChatClient.DEFAULT_IP);
@@ -44,14 +39,13 @@ public class JoinPage extends JFrame {
     private class JoinButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String username = usernameField.getText();
             String ip = ipField.getText();
             int port;
             boolean connected = false;
             try {
                 port = Integer.parseInt(portField.getText());
                 synchronized (ChatClient.class) {
-                    connected = ChatClient.connectToServer(username, ip, port);
+                    connected = ChatClient.connectToServer(ip, port);
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(JoinPage.this, "Invalid port number", "Error", JOptionPane.ERROR_MESSAGE);
@@ -62,10 +56,4 @@ public class JoinPage extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JoinPage joinPage = new JoinPage();
-            joinPage.setVisible(true);
-        });
-    }
 }
