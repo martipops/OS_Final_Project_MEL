@@ -10,7 +10,13 @@ import client.ui.JoinPage;
 import shared.Message;
 import shared.MessageType;
 
-public class ChatClient {
+/**
+ * The Client class is responsible for starting the client application.
+ * 
+ * It contains the main method to start the client, and it is responsible for
+ * handling the connection to the server, and starting the GUI.
+ */
+public class Client {
     public static final String DEFAULT_IP = "localhost";
     public static final int DEFAULT_PORT = 12345;
     private static ServerHandler server;
@@ -18,23 +24,46 @@ public class ChatClient {
     private static DrawingApp app;
     private static JoinPage loginPage;
 
+    /**
+     * Main method to start the client.
+     * It creates the JoinPage and DrawingApp windows.
+     * 
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         loginPage = new JoinPage();
         app = new DrawingApp();
         setGameView(false);
     }
 
+    /**
+     * Set the visibility of the login page and the game view.
+     * 
+     * @param shouldSetGameView whether the game view should be visible
+     */
     static void setGameView(boolean shouldSetGameView) {
         loginPage.setVisible(!shouldSetGameView);
         app.setVisible(shouldSetGameView);
     }
 
+    /**
+     * This method is called when the client is forcibly disconnected from the server.
+     * 
+     * @param errorMessage the error message to be displayed
+     */
     static void forciblyDisconnect(String errorMessage) {
         setGameView(false);
         JOptionPane.showMessageDialog(loginPage, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
 
+    /**
+     * Connect to the server.
+     * 
+     * @param ip the IP address of the server
+     * @param port the port number of the server
+     * @return true if the connection was successful, false otherwise
+     */
     public synchronized static boolean connectToServer(String ip, int port) {
         try {
             socket = new Socket(ip, port);
@@ -49,11 +78,20 @@ public class ChatClient {
         }
     }
 
+    /**
+     * Submit the drawing to the server.
+     */
     public synchronized static void submit() {
         Message message = new Message(app.getCanvas());
         server.sendMessage(message);
     }
 
+    /**
+     * This method is called when the client recieves a message from the server.
+     * Called by the ServerHandler class.
+     * 
+     * @param message the message to be received
+     */
     synchronized static void receiveMessages(Message message) {
         System.out.println("Message received:" + message);
         switch (message.getType()) {

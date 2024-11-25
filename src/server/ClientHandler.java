@@ -5,12 +5,24 @@ import java.net.*;
 import shared.Message;
 import shared.MessageType;
 
+
+/**
+ * The ClientHandler class is responsible for handling the connection between the server and a client.
+ * It implements the Runnable interface so that it can be run in a separate thread,
+ * allowing the server to handle multiple clients concurrently.
+ */
 class ClientHandler implements Runnable {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private int id;
 
+    /**
+     * Constructor for the ClientHandler class.
+     * 
+     * @param id the id of the client
+     * @param socket the socket to be used
+     */
     public ClientHandler(int id, Socket socket) {
         this.id = id;
         this.socket = socket;
@@ -22,10 +34,20 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Get the id of the client.
+     * 
+     * @return the id of the client
+     */
     public int getId() {
         return this.id;
     }
 
+    /**
+     * Send a message to the client.
+     * 
+     * @param message
+     */
     public void sendMessage(Message message) {
         try {
             out.writeObject(message);
@@ -34,13 +56,20 @@ class ClientHandler implements Runnable {
         };
     }
 
+    /**
+     * Parse the message received from the client.
+     * 
+     * @param message the message to be parsed
+     */
     public void parseMessage(Message message) {
-        synchronized (ChatServer.class) {
-            if (ChatServer.getTurn() == getId()) {
-                ChatServer.broadcastMessage(message);
-                ChatServer.nextTurn();
+
+        // Synchronize only the critical section of code within a method.
+        synchronized (Server.class) {
+            if (Server.getTurn() == getId()) {
+                Server.broadcastMessage(message);
+                Server.nextTurn();
             } else {
-                sendMessage(new Message(MessageType.NOTYOURTURN));;
+                sendMessage(new Message(MessageType.NOTYOURTURN));
             }
         }
     }
@@ -53,10 +82,12 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Run the client handler. This method is called when the thread is started.
+     */
     @Override
     public void run() {
         try {
-            sendMessage(new Message("yes"));;
             Message message;
             while ((message = (Message) in.readObject()) != null) {
                 parseMessage(message);
@@ -66,8 +97,8 @@ class ClientHandler implements Runnable {
         } finally {
             try {
                 socket.close();
-                synchronized(ChatServer.class) {
-                    ChatServer.kickPlayer(getId());
+                synchronized(Server.class) {
+                    Server.kickPlayer(getId());
                 }
             } catch (IOException e) {
                 e.printStackTrace();

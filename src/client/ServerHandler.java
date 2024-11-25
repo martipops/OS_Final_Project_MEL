@@ -4,11 +4,21 @@ import java.net.*;
 
 import shared.Message;
 
+
+/**
+ * The ServerHandler class is responsible for handling the server connection.
+ * It implements the Runnable interface so that it can be run in a separate thread.
+ */
 class ServerHandler implements Runnable {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
 
+    /**
+     * Constructor for the ServerHandler class.
+     * 
+     * @param socket the socket to be used
+     */
     public ServerHandler(Socket socket) {
         this.socket = socket;
         try {
@@ -20,6 +30,11 @@ class ServerHandler implements Runnable {
         }
     }
 
+    /**
+     * Send a message to the server.
+     * 
+     * @param message the message to be sent
+     */
     public void sendMessage(Message message) {
         try {
             System.out.println("Sending " + message);
@@ -29,6 +44,9 @@ class ServerHandler implements Runnable {
         }
     }
 
+    /**
+     * Close the socket resources.
+     */
     private void closeResources() {
         try {
             if (out != null) {
@@ -44,13 +62,21 @@ class ServerHandler implements Runnable {
             e.printStackTrace();
         }
     }
-
+    
+    /**
+     * Parse the message received from the server.
+     * 
+     * @param message the message to be parsed
+     */
     public void parseMessage(Message message) {
-        synchronized (ChatClient.class) {
-            ChatClient.receiveMessages(message);
+        synchronized (Client.class) {
+            Client.receiveMessages(message);
         }
     }
 
+    /**
+     * Run the server handler.
+     */
     @Override
     public void run() {
         try {
@@ -62,7 +88,7 @@ class ServerHandler implements Runnable {
             e.printStackTrace();
         } finally {
             System.out.println("Closing");
-            ChatClient.forciblyDisconnect("Disconnected from server");
+            Client.forciblyDisconnect("Disconnected from server");
             closeResources();
         }
     }
