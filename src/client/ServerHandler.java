@@ -62,27 +62,18 @@ class ServerHandler implements Runnable {
             e.printStackTrace();
         }
     }
-    
-    /**
-     * Parse the message received from the server.
-     * 
-     * @param message the message to be parsed
-     */
-    public void parseMessage(Message message) {
-        synchronized (Client.class) {
-            Client.receiveMessages(message);
-        }
-    }
 
     /**
-     * Run the server handler.
+     * This method is called when the thread is started.
+     * Essentially, it continuously listens for messages from the server, 
+     * and parses them via the receiveMessages method in the Client class.
      */
     @Override
     public void run() {
         try {
             Message message;
             while ((message = (Message) in.readObject()) != null) {
-                parseMessage(message);
+                Client.receiveMessages(message);
             }           
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

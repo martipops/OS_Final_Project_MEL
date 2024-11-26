@@ -6,14 +6,22 @@ import java.util.*;
 import shared.Message;
 import shared.MessageType;
 
+
+/**
+ * The Server class is responsible for starting the server and handling the connection between the server and clients.
+ * It contains methods to broadcast messages to all clients, remove a player from the game, move to the next player's turn,
+ * All methods in this class are static so that they can be accessed without creating an instance of the Server class.
+ * All methods in this class are also synchronized so that they can be accessed by multiple threads concurrently.
+ * 
+ * The synchronized keyword uses an object's intrensic mutex https://www.baeldung.com/java-mutex
+ */
+
 public class Server {
     private static final int PORT = 12345;
     private static HashMap<Integer, ClientHandler> clients = new HashMap<>();
-    private static ArrayList<Integer> playerOrder = new ArrayList<>();
-    private static int nextid = 0;
+    private static int nextAvailableId = 0;
     private static int turnCounter = 0;
-
-
+    
     /**
      * Main method to start the server.
      * 
@@ -24,11 +32,10 @@ public class Server {
             System.out.println("Chat server started...");
             while (true) {
                 Socket socket = serverSocket.accept();
-                ClientHandler clientHandler = new ClientHandler(nextid, socket);
-                clients.put(nextid, clientHandler);
-                playerOrder.add(nextid); 
+                ClientHandler clientHandler = new ClientHandler(nextAvailableId, socket);
+                clients.put(nextAvailableId, clientHandler);
                 new Thread(clientHandler).start();
-                nextid++;
+                nextAvailableId++;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,6 +51,7 @@ public class Server {
         System.out.println("Broadcasting:" + message);
         switch (message.getType()) {
             case MessageType.NOTYOURTURN:
+                // Don't broadcast if it's not the client's turn.
                 break;
             default:
                 for (ClientHandler client : clients.values()) {
@@ -60,7 +68,7 @@ public class Server {
      */
     synchronized static void kickPlayer(int clientId) {
         clients.remove(clientId);
-        playerOrder.remove(Integer.valueOf(clientId));
+        // playerOrder.remove(Integer.valueOf(clientId));
 
         // If the player being kicked is the current player, move to the next player.
         if (isClientTurn(clientId)) {
@@ -72,8 +80,8 @@ public class Server {
      * Move to the next player's turn.
      */
     synchronized static void nextTurn() {
-        if (!playerOrder.isEmpty()) {
-            turnCounter = (turnCounter + 1) % playerOrder.size();
+        if (!clients.isEmpty()) {
+            turnCounter = (turnCounter + 1) % clients.size();
         }
     }
 
@@ -83,7 +91,16 @@ public class Server {
      * @return the current player's turn
      */
     synchronized static int getTurn() {
-        return playerOrder.get(turnCounter); 
+        if (clients.isEmpty()) {
+            return 0;
+        }
+        ClientHandler[] players = clients.values().toArray(new ClientHandler[0]);
+        // If the current turn is out of bounds of the player list, move to the next turn.
+        if (turnCounter >= players.length) {
+            nextTurn();
+            return getTurn();
+        }
+        return players[turnCounter].getId();
     }
 
     /**

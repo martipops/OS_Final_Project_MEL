@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
-
 /**
  * The DrawingApp class represents the main window of the drawing application.
  * It contains the drawing panel and the controls for the application.
@@ -19,12 +18,18 @@ import java.util.List;
  * The drawing panel subclass is where the user can draw on the canvas.
  */
 public class DrawingApp extends JFrame {
-    private DrawPanel drawPanel;
-    private Color drawColor = Color.BLACK;
-    private CanvasInfo canvas;
-    private int canvasWidth = 600;
-    private int canvasHeight = 400;
+    private static final int CANVAS_WIDTH = 600;
+    private static final int CANVAS_HEIGHT = 400;
+    private static final int CONTROL_PANEL_HEIGHT = 50;
+    private static final Color DEFAULT_DRAW_COLOR = Color.BLACK;
+    private static final Color BACKGROUND_COLOR = Color.WHITE;
+    private static final Color BORDER_COLOR = Color.RED;
+    private static final int BORDER_THICKNESS = 2;
+    private static final int CANVAS_PADDING = 20;
 
+    private DrawPanel drawPanel;
+    private Color drawColor = DEFAULT_DRAW_COLOR;
+    private CanvasInfo canvas;
 
     /**
      * Constructor for the DrawingApp class.
@@ -34,25 +39,20 @@ public class DrawingApp extends JFrame {
         canvas = new CanvasInfo();
         drawPanel = new DrawPanel();
 
-        JButton newLayerButton = new JButton("Submit");
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> Client.submit());;
         JButton undoButton = new JButton("< Undo");
-
         undoButton.addActionListener(e -> drawPanel.undoLastStroke());
-        newLayerButton.addActionListener(e -> {
-            synchronized (Client.class) {
-                Client.submit();
-            }
-        });
 
         JPanel controls = new JPanel();
-        controls.add(newLayerButton);
+        controls.add(submitButton);
         controls.add(undoButton);
 
         add(controls, BorderLayout.NORTH);
         add(drawPanel, BorderLayout.CENTER);
 
         setResizable(false);
-        setSize(canvasWidth, canvasHeight + 50);
+        setSize(CANVAS_WIDTH, CANVAS_HEIGHT + CONTROL_PANEL_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(false);
     }
@@ -80,11 +80,8 @@ public class DrawingApp extends JFrame {
     /**
      * The DrawPanel subclass represents the drawing panel of the application.
      * It is where the user can draw on the canvas.
-     * 
      */
     private class DrawPanel extends JPanel {
-
-        private static final int CANVAS_PADDING = 20;
 
         /**
          * Constructor for the DrawPanel subclass.
@@ -92,15 +89,32 @@ public class DrawingApp extends JFrame {
          * Also hooks up mouse listeners to handle drawing.
          */
         public DrawPanel() {
-            setBackground(Color.WHITE);
-            setPreferredSize(new Dimension(400, 400));
-            
-            // Creates a red border with some padding
-            setBorder(new CompoundBorder(
-                    new EmptyBorder(CANVAS_PADDING, CANVAS_PADDING, CANVAS_PADDING, CANVAS_PADDING),
-                    BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED)));
-            canvas.createEmptyStroke();
+            setBackground(BACKGROUND_COLOR);
+            setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+            setBorder(createBorder());
 
+            canvas.createEmptyStroke();
+            setupMouseListeners();
+        }
+
+        /**
+         * Create a compound border for the drawing panel.
+         * 
+         * @return the compound border
+         */
+        private CompoundBorder createBorder() {
+            return new CompoundBorder(
+                new EmptyBorder(CANVAS_PADDING, CANVAS_PADDING, CANVAS_PADDING, CANVAS_PADDING),
+                BorderFactory.createMatteBorder(BORDER_THICKNESS, BORDER_THICKNESS, BORDER_THICKNESS, BORDER_THICKNESS, BORDER_COLOR)
+            );
+        }
+
+        /**
+         * Set up the mouse listeners for the drawing panel.
+         */
+        private void setupMouseListeners() {
+
+            // Add a mouse listener to handle mouse click and release events
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
@@ -115,8 +129,7 @@ public class DrawingApp extends JFrame {
                 }
             });
 
-
-            // Add a mouse motion listener to the panel to handle drawing
+            // Add a mouse motion listener to handle mouse drag events
             addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseDragged(MouseEvent e) {
@@ -132,7 +145,7 @@ public class DrawingApp extends JFrame {
         }
 
         /**
-         * Check if the given point is within the canvas boundary.
+         * A helper method to check if the given point is within the canvas boundary.
          * 
          * @param p the point to be checked
          * @return true if the point is within the canvas boundary, false otherwise
@@ -152,7 +165,7 @@ public class DrawingApp extends JFrame {
         }
 
         /**
-         * Paint the component.
+         * Paint the component based on the current CanvasInfo object.
          * 
          * @param g the graphics object
          */

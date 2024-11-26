@@ -19,6 +19,7 @@ import shared.MessageType;
 public class Client {
     public static final String DEFAULT_IP = "localhost";
     public static final int DEFAULT_PORT = 12345;
+    
     private static ServerHandler server;
     private static Socket socket;
     private static DrawingApp app;
@@ -41,7 +42,7 @@ public class Client {
      * 
      * @param shouldSetGameView whether the game view should be visible
      */
-    static void setGameView(boolean shouldSetGameView) {
+    public static void setGameView(boolean shouldSetGameView) {
         loginPage.setVisible(!shouldSetGameView);
         app.setVisible(shouldSetGameView);
     }
@@ -51,7 +52,7 @@ public class Client {
      * 
      * @param errorMessage the error message to be displayed
      */
-    static void forciblyDisconnect(String errorMessage) {
+    public static void forciblyDisconnect(String errorMessage) {
         setGameView(false);
         JOptionPane.showMessageDialog(loginPage, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -64,7 +65,7 @@ public class Client {
      * @param port the port number of the server
      * @return true if the connection was successful, false otherwise
      */
-    public synchronized static boolean connectToServer(String ip, int port) {
+    public static boolean connectToServer(String ip, int port) {
         try {
             socket = new Socket(ip, port);
             server = new ServerHandler(socket);
@@ -81,7 +82,7 @@ public class Client {
     /**
      * Submit the drawing to the server.
      */
-    public synchronized static void submit() {
+    public static void submit() {
         Message message = new Message(app.getCanvas());
         server.sendMessage(message);
     }
@@ -92,7 +93,7 @@ public class Client {
      * 
      * @param message the message to be received
      */
-    synchronized static void receiveMessages(Message message) {
+    public static void receiveMessages(Message message) {
         System.out.println("Message received:" + message);
         switch (message.getType()) {
             case MessageType.CANVAS:
