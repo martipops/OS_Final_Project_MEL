@@ -74,6 +74,9 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Close the socket resources.
+     */
     public void close() {
         try {
             socket.close();

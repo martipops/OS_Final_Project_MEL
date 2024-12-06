@@ -1,0 +1,114 @@
+@startuml
+allowmixing
+
+package client {
+    class Client {
+        - server: ServerHandler
+        - socket: Socket
+        - app: DrawingApp
+        - loginPage: JoinPage
+        + main(args: String[])
+        + connectToServer(ip: String, port: int): boolean
+        + submit()
+        + receiveMessages(message: Message)
+    }
+
+    class ServerHandler <<Runnable>>{
+        - socket: Socket
+        - out: ObjectOutputStream
+        - in: ObjectInputStream
+        + run()
+        + sendMessage(message: Message)
+    }
+
+    package ui {
+        class DrawingApp {
+        - drawPanel: DrawPanel
+        - drawColor: Color
+        - canvas: CanvasInfo
+        + setCanvas(canvas: CanvasInfo)
+        + getCanvas(): CanvasInfo
+    }
+
+    class DrawPanel {
+        + undoLastStroke() 
+    }
+
+    class JoinPage {
+        - ipField: JTextField
+        - portField: JTextField
+        - joinButton: JButton
+    }
+    }
+
+    
+
+    Client x--> ServerHandler : new thread
+    JoinPage -- DrawingApp
+    (JoinPage, DrawingApp) -- Client
+    DrawingApp *- DrawPanel
+    DrawingApp *-- shared.CanvasInfo
+    ServerHandler --|> shared.Message
+    JoinPage <..> DrawingApp
+}
+
+
+package server {
+    class Server {
+        - clients: HashMap<Integer, ClientHandler>
+        - nextAvailableId: int
+        - turnCounter: int
+        + main(args: String[])
+        + broadcastMessage(message: Message)
+        + kickPlayer(clientId: int)
+        + nextTurn()
+        + getTurn(): int
+    }
+
+    class ClientHandler <<Runnable>> {
+        - socket: Socket
+        - out: ObjectOutputStream
+        - in: ObjectInputStream
+        - id: int
+        + run()
+        + sendMessage(message: Message)
+        + getId(): int
+    }
+
+    Server x--> ClientHandler : multiple threads
+    ClientHandler --|> shared.Message
+}
+
+
+
+package shared {
+    class Message <<Serializable>> {
+        - text: String
+        - canvas: CanvasInfo
+        - type: MessageType
+        + getText(): String
+        + getCanvas(): CanvasInfo
+        + getType(): MessageType
+    }
+
+    class CanvasInfo <<Serializable>> {
+        - currentStroke: List<Point>
+        - currentLayer: List<List<Point>>
+        - layers: List<List<List<Point>>>
+        + createNewLayer()
+        + addToStroke(p: Point)
+        + createEmptyStroke()
+    }
+
+    enum MessageType {
+            TEXT
+            CANVASINFO
+            NOTYOURTURN
+    }
+
+    Message *- CanvasInfo
+    Message *- MessageType
+}
+
+
+@enduml
