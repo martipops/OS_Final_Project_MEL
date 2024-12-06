@@ -1,9 +1,6 @@
-package server;
+
 import java.io.*;
 import java.net.*;
-
-import shared.Message;
-import shared.MessageType;
 
 
 /**

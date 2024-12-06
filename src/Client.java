@@ -1,14 +1,7 @@
-package client;
-
 import java.io.*;
 import java.net.*;
 
 import javax.swing.JOptionPane;
-
-import client.ui.DrawingApp;
-import client.ui.JoinPage;
-import shared.Message;
-import shared.MessageType;
 
 /**
  * The Client class is responsible for starting the client application.

@@ -1,4 +1,4 @@
-package shared;
+
 import java.io.Serializable;
 import java.awt.*;
 import java.util.List;

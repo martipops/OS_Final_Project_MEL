@@ -1,4 +1,4 @@
-package shared;
+
 
 /**
  * The MessageType enum represents the type of message 

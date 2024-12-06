@@ -1,11 +1,8 @@
-package client.ui;
+
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-
-import client.Client;
-import shared.CanvasInfo;
 
 import java.awt.*;
 import java.awt.event.*;
